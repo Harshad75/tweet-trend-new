@@ -5,11 +5,14 @@ pipeline {
     }
   }
 
+environment {
+  PATH = "/opt/apache-maven-3.9.6/bin:$PATH"
+}
 
   stages {
-    stage('Clone the source code by using SCM') {
+    stage("Build the Source Code") {
       steps {
-        git branch: 'main', url: 'https://github.com/Harshad75/tweet-trend-new.git' 
+        sh 'mvn clean deploy'
       }
     }
   }
