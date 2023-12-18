@@ -12,9 +12,15 @@ environment {
   stages {
     stage("Build the Source Code") {
       steps {
-        sh 'mvn clean deploy'
+        sh 'mvn clean deploy -Dmaven.test.skip=true'
       }
     }
+    stage("Unit Test") {
+      steps {
+        sh 'mvn surefire-report:report'
+      }
+    }
+
     stage('SonarQube analysis') {
       environment {
        scannerHome = tool 'sonar_scanner'
