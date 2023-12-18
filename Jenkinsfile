@@ -12,7 +12,7 @@ environment {
   stages {
     stage("Build the Source Code") {
       steps {
-        sh 'mvn clean deploy -Dmaven.test.skip=true'
+        sh 'mvn clean deploy'
       }
     }
     stage('SonarQube analysis') {
