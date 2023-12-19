@@ -31,6 +31,18 @@ environment {
         }
       }
     }
+    stage("Quality Gate"){
+      steps {
+        script {
+          timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
+          def ng = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+          if (ng.status != 'OK') {
+            error "Pipeline aborted due to quality gate failure: ${ng.status}"
+          }
+          }    
+        }     
+      }
+    }
   }
-
 }
+  
