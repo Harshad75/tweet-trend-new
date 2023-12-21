@@ -83,7 +83,7 @@ environment {
        script {
         echo '<-------Push Image Started-------->'
         docker.withRegistry(registry, 'JFrog-Cred'){
-	  image_conatiner.push()
+	  image_container.push()
         }
 
 	echo '<-------Push Image Ended--------->'
