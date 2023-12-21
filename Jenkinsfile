@@ -21,14 +21,16 @@ environment {
         sh 'mvn surefire-report:report'
       }
     }
-    stage('Build image') {
+    stage('Build image') { 
       steps {
-        /* This builds the actual image; synonymous to
-         * docker build on the command line */
-
-        app = docker.build("Harshad75/tweet-trend-new")
+        echo 'Starting to build docker image'
+          script {
+            def customImage = docker.build("my-image:${env.BUILD_ID}")
+	    customImage.push()
+          }
       }
     }
+
     stage('SonarQube analysis') {
       environment {
        scannerHome = tool 'sonar_scanner'
