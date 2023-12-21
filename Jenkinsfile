@@ -21,7 +21,12 @@ environment {
         sh 'mvn surefire-report:report'
       }
     }
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
 
+        app = docker.build("Harshad75/tweet-trend-new")
+    }
     stage('SonarQube analysis') {
       environment {
        scannerHome = tool 'sonar_scanner'
