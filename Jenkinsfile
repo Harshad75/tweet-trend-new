@@ -22,10 +22,12 @@ environment {
       }
     }
     stage('Build image') {
+      steps {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
         app = docker.build("Harshad75/tweet-trend-new")
+      }
     }
     stage('SonarQube analysis') {
       environment {
