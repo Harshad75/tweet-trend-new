@@ -1,4 +1,6 @@
 def registry = 'https://harshad7777.jfrog.io'
+def Image_Name = 'harshad7777.jfrog.io/docker-dops-workshop-docker-local/DevOps-docker-first'
+def Ver_Sion = '2.1.2'
 pipeline {
   agent {
     node {
@@ -21,15 +23,6 @@ environment {
         sh 'mvn surefire-report:report'
       }
     }
-    stage('Build image') { 
-      steps {
-        echo 'Starting to build docker image'
-	script {
-          docker.build("testing:${env.BUILD_ID}")
-	}  
-      }
-    }
-
     stage('SonarQube analysis') {
       environment {
        scannerHome = tool 'sonar_scanner'
@@ -51,20 +44,6 @@ environment {
           }    
         }     
       }
-    }
-    stage('Push image') {
-      steps {
-       script {
-        /* Finally, we'll push the image with two tags:
-         * First, the incremental build number from Jenkins
-         * Second, the 'latest' tag.
-         * Pushing multiple tags is cheap, as all the layers are reused. */
-        docker.withRegistry(registry, 'JFrog-Cred') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-        }
-       }
-      }	
     }
     stage("Jar Publish") {
       steps {
@@ -89,7 +68,30 @@ environment {
           echo '<--------------- Jar Publish Ended --------------->'    
         }
       }   
-    }   
+    }
+    stage('Build image') {
+      steps {
+        echo '----------Build Image Started--------'
+        script {
+           image_container = docker.build(Image_Name+":"+Ver_Sion)
+        }
+	echo '-------Build Image Completed-------'
+      }
+    }
+    stage('Push image') {
+      steps {
+       script {
+        echo '<-------Push Image Started-------->'
+        docker.withRegistry(registry, 'JFrog-Cred'){
+	  image_conatiner.push()
+        }
+
+	echo '<-------Push Image Ended--------->'
+       }
+      }
+    }
+ 
+
   }
 }
   
