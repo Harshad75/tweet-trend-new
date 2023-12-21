@@ -24,7 +24,7 @@ environment {
     stage('Build image') { 
       steps {
         echo 'Starting to build docker image'
-        sh 'docker.build("my-image:${env.BUILD_ID}")'
+        sh 'docker.build("testing:${env.BUILD_ID}")'
       }
     }
 
