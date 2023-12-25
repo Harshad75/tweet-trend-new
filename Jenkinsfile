@@ -90,10 +90,10 @@ environment {
        }
       }
     }
-    stage('Deploy') {
+    stage('Deployment by Helm') {
       steps{
         script{
-	  sh './deploy.sh'
+	  sh 'helm install demoo-99 demoo-0.1.0.tgz'
         }
       }
     }
