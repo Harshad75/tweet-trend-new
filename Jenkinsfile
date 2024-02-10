@@ -1,102 +1,40 @@
 def registry = 'https://harshad7777.jfrog.io'
 def Image_Name = 'harshad7777.jfrog.io/docker-dops-workshop-docker-local/devops-docker-first'
 def Ver_Sion = '2.1.3'
+
+
+
+
 pipeline {
-  agent {
-    node {
-      label 'maven'
+    agent {
+	node{
+         label 'maven-slave
+	}
     }
-  }
-
-environment {
-  PATH = "/opt/apache-maven-3.9.6/bin:$PATH"
+    stages {
+        stage('Parallel Jobs') {
+            parallel {
+                stage('Job A') {
+                    steps {
+                        echo 'Running Job A'
+			sh 'cat deploy.sh'
+                        // Add steps for Job A here
+                    }
+                }
+                stage('Job B') {
+                    steps {
+                        echo 'Running Job B'
+                        // Add steps for Job B here
+                    }
+                }
+                stage('Job C') {
+                    steps {
+                        echo 'Running Job C'
+                        // Add steps for Job C here
+                    }
+                }
+            }
+        }
+    }
 }
-
-  stages {
-    stage("Build the Source Code") {
-      steps {
-        sh 'mvn clean deploy -Dmaven.test.skip=true'
-      }
-    }
-    stage("Unit Test") {
-      steps {
-        sh 'mvn surefire-report:report'
-      }
-    }
-    stage('SonarQube analysis') {
-      environment {
-       scannerHome = tool 'sonar_scanner'
-      }
-      steps{ 
-        withSonarQubeEnv('sonarqube-server') { // If you have configured more than one global server connection, you can specify its name
-        sh "${scannerHome}/bin/sonar-scanner"
-        }
-      }
-    }
-    stage("Quality Gate"){
-      steps {
-        script {
-          timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-          def ng = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-          if (ng.status != 'OK') {
-            error "Pipeline aborted due to quality gate failure, Please check the source code and reduce bugs and Code smells: ${ng.status}"
-          }
-          }    
-        }     
-      }
-    }
-    stage("Jar Publish") {
-      steps {
-        script {
-          echo '<--------------- Jar Publish Started --------------->'
-          def server = Artifactory.newServer url:registry+"/artifactory" ,  credentialsId:"JFrog-Cred"
-          def properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}";
-          def uploadSpec = """{
-            "files": [
-              {
-                "pattern": "jarstaging/(*)",
-                "target": "jenkins-integration-libs-release-local/{1}",
-                "flat": "false",
-                "props" : "${properties}",
-                "exclusions": [ "*.sha1", "*.md5"]
-                            }
-                         ]
-                     }"""
-          def buildInfo = server.upload(uploadSpec)
-          buildInfo.env.collect()
-          server.publishBuildInfo(buildInfo)
-          echo '<--------------- Jar Publish Ended --------------->'    
-        }
-      }   
-    }
-    stage('Build image') {
-      steps {
-        echo '----------Build Image Started--------'
-        script {
-           image_container = docker.build(Image_Name+":"+Ver_Sion)
-        }
-	echo '-------Build Image Completed-------'
-      }
-    }
-    stage('Push image') {
-      steps {
-       script {
-        echo '<-------Push Image Started-------->'
-        docker.withRegistry(registry, 'JFrog-Cred'){
-	  image_container.push()
-        }
-
-	echo '<-------Push Image Ended--------->'
-       }
-      }
-    }
-    stage('Deployment by Helm') {
-      steps{
-        script{
-	  sh 'helm install demoo-99 demoo-0.1.0.tgz'
-        }
-      }
-    }
-  }
-}  
   
