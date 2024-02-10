@@ -20,6 +20,7 @@ pipeline {
 			sh 'cat deploy.sh'
 			sh 'systemctl status docker'
 			
+			sh 'rm -rf efgh'
 			sh 'mkdir efgh'
 			sh 'rm -rf abcd.txt'
 			sh 'touch efgh/abcd.txt'
