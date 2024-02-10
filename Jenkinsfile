@@ -21,8 +21,8 @@ pipeline {
 			sh 'systemctl status docker'
 			
 			sh 'mkdir efgh'
-			sh 'cd efgh'
-			sh 'touch abcd.txt'
+			sh 'rm -rf abcd.txt'
+			sh 'touch efgh/abcd.txt'
 			    
                         // Add steps for Job A here
                     }
