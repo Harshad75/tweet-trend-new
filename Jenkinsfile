@@ -18,9 +18,11 @@ pipeline {
                     steps {
                         echo 'Running Job A'
 			sh 'cat deploy.sh'
-			sh 'systemctl reload docker'
-			sh 'systemctl status jenkins'
-			sh 'mkdir abcd'
+			sh 'systemctl status docker'
+			
+			sh 'mkdir efgh'
+			sh 'cd efgh'
+			sh 'touch abcd.txt'
 			    
                         // Add steps for Job A here
                     }
