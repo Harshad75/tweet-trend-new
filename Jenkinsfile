@@ -8,7 +8,7 @@ def Ver_Sion = '2.1.3'
 pipeline {
     agent {
 	node{
-         label 'maven-slave
+         label 'maven-slave'
 	}
     }
     stages {
